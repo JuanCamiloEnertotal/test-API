@@ -1,30 +1,42 @@
-# React + TypeScript + Vite
+<p align="center">
+  <a href="https://www.enertotalesp.com/" target="blank"><img src="logo.png" width="200" alt="Enertotal Logo" /></a>
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-Currently, two official plugins are available:
+  <p align="center">Aplicacion realizada en <a href="http://nodejs.org" target="_blank">Node.js</a> para la automatizacion de procesos del Centro de gestion de medida de ENERTOTAL.</p>
+    <p align="center">
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Descripción
+El frontend esta realizado en REACT en su version 19, a continuacion se describen los pasos a seguir para su despliegue
 
-## Expanding the ESLint configuration
+## 1. Reconstruir modulos de Nodejs.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+$ npm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## 2. Correr aplicacion en modo desarrollo.
+
+```bash
+# Configurar variables de entorno
+# Renombrar archivo .env.template a .env para desarrollo ó .env.production para produccion
+
+# watch mode
+$ npm run dev
+```
+
+## 3. Generar build de produccion
+
+```bash
+$ npm run build
+```
+
+El build de la aplicacion generara una carpeta llamada <b>dist</b> la cual puede ser desplegada mediante IIS, PM2 o mediante cualquier administrador de procesos que soporte Nodejs
+
+Nota: El backend cuenta con la posibilidad de servir contenido estatico, por lo cual es el front puede ser configurado en la carpeta publica expuesta.
+
+## Licencia
+
+[MIT licensed](LICENSE).
