@@ -1,6 +1,5 @@
 
-import { cgmApi } from "@api/cmgApi";
-import { isAxiosError } from "axios";
+import { useSuiStore } from "@root/stores/sui/sui.store";
 import { useState } from "react"
 
 import Swal from "sweetalert2";
@@ -11,14 +10,14 @@ interface SuiUploadFormatProps {
     ano: number;
     mes: string;
     mercado: number;
-    setStatus: (status: boolean) => void;
-    setLoading: (loading: boolean) => void;
+
 }
 
 
-export const SuiUploadFormat = ({ tipoFormato, ano, mes, mercado, setStatus, setLoading }: SuiUploadFormatProps) => {
+export const SuiUploadFormat = ({ tipoFormato, ano, mes, mercado, }: SuiUploadFormatProps) => {
 
     const [file, setFile] = useState<File | null>(null);
+    const cargarFormatoSui = useSuiStore(state => state.cargarFormatoSui);
 
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,52 +44,26 @@ export const SuiUploadFormat = ({ tipoFormato, ano, mes, mercado, setStatus, set
 
             if (tipoFormato === '') return;
 
-            setStatus(false); //Estatus de la carga, envia al componente padre
 
-            let request = '/sui/cargar/formato?tipo=';
             const formData = new FormData();
             formData.append('file', file);
             try {
 
-                if (tipoFormato === 'cs2') request += 'cs2';
-                if (tipoFormato === 'tc1' && ano !== 0 && mes !== '') request += `tc1&anio=${ano}&mes=${mes}`;
-                if (tipoFormato === 'dt') request += `dt`;
-                if (tipoFormato === 'cns') request += `cns`;
-                if (tipoFormato === 'cdi') request += `cdi`;
-                if (tipoFormato === 'reinicio') request += `reinicio&anio=${ano}&mes=${mes}&mercado=${mercado}`;
-
-
-                setLoading(true);
-
-                const response = await cgmApi.post(request, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-                // console.log('File uploaded successfully:', response);
+                const respuesta = await cargarFormatoSui(tipoFormato, ano, mes, mercado, formData);
 
                 Swal.fire({
                     icon: 'success',
                     title: '¡Genial!',
-                    text: `${response.data.mensaje} - ${response.data.registros}`,
+                    text: `${respuesta.mensaje} -  Nro. Registros ${respuesta.registros}`,
                 });
-                setLoading(false);
 
-                setStatus(true); // Estatus de la carga, envia al componente padre
 
             } catch (error) {
-                setLoading(false);
-                (isAxiosError(error) && error.response) ?
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: error.response.data.message,
-                    })
-                    : Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Error al subir el archivo',
-                    });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: `'Error al subir el archivo' ${error}`,
+                });
 
             }
         }

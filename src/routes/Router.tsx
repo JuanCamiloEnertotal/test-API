@@ -1,6 +1,7 @@
 import { DashboardLayout } from "@layouts/DashboardLayout"
-import { FormCompensationPage, FormUploadPage, FormUtilityPage } from "@pages/sui";
+import { FormCompensationPage, FormUploadPage } from "@pages/sui";
 import { NotFoundPage } from "@root/pages/common/not-found/NotFoundPage";
+import { FormEnerbitPage } from "@root/pages/enerbit";
 import { Root } from "@root/Root";
 
 
@@ -27,8 +28,8 @@ export const Router = createBrowserRouter([
                         element: <FormCompensationPage />
                     },
                     {
-                        path: 'sui/utility',
-                        element: <FormUtilityPage />
+                        path: 'enerbit/borders',
+                        element: <FormEnerbitPage />
                     },
                     {
                         path: '*',

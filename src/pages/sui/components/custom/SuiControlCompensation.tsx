@@ -1,70 +1,49 @@
-import { cgmApi } from "@api/cmgApi";
-import { useEffect, useState } from "react";
+import { useSuiStore } from "@root/stores/sui/sui.store";
+import { useEffect } from "react";
 
-interface Control {
-    tc1: number;
-    cs2: number;
-    consumos: number;
-    cargos: number;
-    cdi: number;
-}
 
 interface SuiControlCompensationProps {
-    ano: number;
+    anio: number;
     mes: string;
     mercado: number;
-    setValidProcess: (valid: boolean) => void;
 }
 
-export const SuiControlCompensation = ({ ano, mes, mercado, setValidProcess }: SuiControlCompensationProps) => {
+export const SuiControlCompensation = ({ anio, mes, mercado }: SuiControlCompensationProps) => {
 
-    const [data, setData] = useState<Control>();
 
-    const getData = async (ano: number, mes: string, mercado: number) => {
+    const listarVariablesCompensacion = useSuiStore(state => state.listarVariablesCompensacion);
+    const variablesCompensacion = useSuiStore(state => state.variablesCompensacion);
 
-        if(ano === 0 || mes === '' || mercado === 0) return;
-        
-        const {data} = await cgmApi.get(`/sui/variables/compensacion?anio=${ano}&mes=${mes}&mercado=${mercado}`);   
-        setData(data);
+
+    const getData = async (anio: number, mes: string, mercado: number) => {
+
+        if (anio === 0 || mes === '' || mercado === 0) return;
+
+        await listarVariablesCompensacion(anio, mes, mercado)
+
     }
 
-    const validProcess = (data: Control) => {
-
-
-        if(data?.tc1 === 0 || data?.cs2 === 0 || data?.consumos === 0 || data?.cargos === 0 || data?.cdi === 0){
-            setValidProcess(true);
-        } else if(data?.tc1 === undefined || data?.cs2 === undefined || data?.consumos === undefined || data?.cargos === undefined || data?.cdi === undefined) {
-            setValidProcess(true);
-        } else {
-            setValidProcess(false);
-        }
-    }
 
     useEffect(() => {
-        getData(ano, mes, mercado);
-    }, [ano, mes, mercado])
-
-    useEffect(() => {
-        validProcess(data!);
-    });
+        getData(anio, mes, mercado);
+    }, [anio, mes, mercado])
 
 
-
-  return (
-    <>
-        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-0 row-group text-center border-top">
+    return (
+        <>
+            <div className="row row-cols-1 row-cols-md-3 row-cols-xl-5 g-0 row-group text-center border-top">
                 <div className="col">
                     <div className="p-3">
                         <h5 className="mb-0">TC1</h5>
                         <small className="mb-0">
                             {
-                                (data?.tc1 === 0 || data?.tc1 === undefined) 
-                                ? <img src="/src/assets/images/icons/cancel.png" style={{height:15}} />
-                                : <img src="/src/assets/images/icons/checked.png" style={{height:15}} />
-                                
+                                (variablesCompensacion.tc1 === 0 || variablesCompensacion.tc1 === undefined)
+                                    ? <img src="/src/assets/images/icons/cancel.png" style={{ height: 15 }} />
+                                    : <img src="/src/assets/images/icons/checked.png" style={{ height: 15 }} />
+
                             }
                             <span>
-                                <i className="bx bx-right-arrow-alt align-middle"></i> {data?.tc1}
+                                <i className="bx bx-right-arrow-alt align-middle"></i> {variablesCompensacion.tc1}
                             </span>
                         </small>
                     </div>
@@ -74,13 +53,13 @@ export const SuiControlCompensation = ({ ano, mes, mercado, setValidProcess }: S
                         <h5 className="mb-0">CS2</h5>
                         <small className="mb-0">
                             {
-                                (data?.cs2 === 0 || data?.cs2 === undefined) 
-                                ? <img src="/src/assets/images/icons/cancel.png" style={{height:15}} />
-                                : <img src="/src/assets/images/icons/checked.png" style={{height:15}} />
-                                
+                                (variablesCompensacion.cs2 === 0 || variablesCompensacion.cs2 === undefined)
+                                    ? <img src="/src/assets/images/icons/cancel.png" style={{ height: 15 }} />
+                                    : <img src="/src/assets/images/icons/checked.png" style={{ height: 15 }} />
+
                             }
                             <span>
-                                <i className="bx bx-right-arrow-alt align-middle"></i> {data?.cs2}
+                                <i className="bx bx-right-arrow-alt align-middle"></i> {variablesCompensacion.cs2}
                             </span>
                         </small>
                     </div>
@@ -90,13 +69,13 @@ export const SuiControlCompensation = ({ ano, mes, mercado, setValidProcess }: S
                         <h5 className="mb-0">CONSUMOS</h5>
                         <small className="mb-0">
                             {
-                                (data?.consumos === 0 || data?.consumos === undefined) 
-                                ? <img src="/src/assets/images/icons/cancel.png" style={{height:15}} />
-                                : <img src="/src/assets/images/icons/checked.png" style={{height:15}} />
-                                
+                                (variablesCompensacion.consumos === 0 || variablesCompensacion.consumos === undefined)
+                                    ? <img src="/src/assets/images/icons/cancel.png" style={{ height: 15 }} />
+                                    : <img src="/src/assets/images/icons/checked.png" style={{ height: 15 }} />
+
                             }
                             <span>
-                                <i className="bx bx-right-arrow-alt align-middle"></i> {data?.consumos}
+                                <i className="bx bx-right-arrow-alt align-middle"></i> {variablesCompensacion.consumos}
                             </span>
                         </small>
                     </div>
@@ -106,13 +85,13 @@ export const SuiControlCompensation = ({ ano, mes, mercado, setValidProcess }: S
                         <h5 className="mb-0">CARGOS DT</h5>
                         <small className="mb-0">
                             {
-                                (data?.cargos === 0 || data?.cargos === undefined) 
-                                ? <img src="/src/assets/images/icons/cancel.png" style={{height:15}} />
-                                : <img src="/src/assets/images/icons/checked.png" style={{height:15}} />
-                                
+                                (variablesCompensacion.cargos === 0 || variablesCompensacion.cargos === undefined)
+                                    ? <img src="/src/assets/images/icons/cancel.png" style={{ height: 15 }} />
+                                    : <img src="/src/assets/images/icons/checked.png" style={{ height: 15 }} />
+
                             }
                             <span>
-                                <i className="bx bx-right-arrow-alt align-middle"></i> {data?.cargos}
+                                <i className="bx bx-right-arrow-alt align-middle"></i> {variablesCompensacion.cargos}
                             </span>
                         </small>
                     </div>
@@ -122,18 +101,18 @@ export const SuiControlCompensation = ({ ano, mes, mercado, setValidProcess }: S
                         <h5 className="mb-0">CDI</h5>
                         <small className="mb-0">
                             {
-                                (data?.cdi === 0 || data?.cdi === undefined) 
-                                ? <img src="/src/assets/images/icons/cancel.png" style={{height:15}} />
-                                : <img src="/src/assets/images/icons/checked.png" style={{height:15}} />
-                                
+                                (variablesCompensacion.cdi === 0 || variablesCompensacion.cdi === undefined)
+                                    ? <img src="/src/assets/images/icons/cancel.png" style={{ height: 15 }} />
+                                    : <img src="/src/assets/images/icons/checked.png" style={{ height: 15 }} />
+
                             }
                             <span>
-                                <i className="bx bx-right-arrow-alt align-middle"></i> {data?.cdi}
+                                <i className="bx bx-right-arrow-alt align-middle"></i> {variablesCompensacion.cdi}
                             </span>
                         </small>
                     </div>
                 </div>
-        </div>
-    </>
-  )
+            </div>
+        </>
+    )
 }

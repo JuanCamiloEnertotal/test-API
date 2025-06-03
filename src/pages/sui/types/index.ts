@@ -31,3 +31,31 @@ export type ProcessResponse = {
   ok: boolean;
   message: string;
 };
+
+export type Mercado = {
+  id: number;
+  nombre: string;
+};
+
+export type Anio = {
+  id: number;
+  descripcion: string;
+};
+
+export type VariablesCompensacion = {
+  tc1: number;
+  cs2: number;
+  consumos: number;
+  cargos: number;
+  cdi: number;
+};
+
+export type ControlFormato = {
+  mes: string;
+  total: number;
+};
+
+export type RespuestaCargaSui = {
+  mensaje: string;
+  registros: number;
+};

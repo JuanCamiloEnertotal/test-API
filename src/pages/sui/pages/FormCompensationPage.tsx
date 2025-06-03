@@ -1,21 +1,25 @@
-import { cgmApi } from "@api/cmgApi";
+
 import { SuiAlertMessage, SuiMenuOptions, SuiMonthSelect, SuiOperatorSelect, SuiYearSelect, SuiControlFormat, SuiControlCompensation } from "@sui/components/custom";
-import { isAxiosError } from "axios";
 import { useState } from "react";
 
-import * as XLSX from "xlsx";
+
 import Swal from "sweetalert2";
 import 'sweetalert2/dist/sweetalert2.css';
-import { Compensacion } from "../types";
+import { useSuiStore } from "@root/stores/sui/sui.store";
+
 
 export const FormCompensationPage = () => {
 
+    const exportarCompensacion = useSuiStore(state => state.exportarCompensacion);
+
+    const calcularCompensacion = useSuiStore(state => state.calcularCompensacion);
+    const loading = useSuiStore(state => state.loading)
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [selectedMonth, setSelectedMonth] = useState<string>('');
     const [selectedOperator, setSelectedOperator] = useState<string>('');
-    const [status, setStatus] = useState(false);
-    const [validProcess, setValidProcess] = useState(true);
-    const [loading, setLoading] = useState(false);
+
+
+    const validaCompensacion = useSuiStore(state => state.validaCompensacion);
 
     const handleSelectYear = (value: string) => {
         setSelectedYear(value);
@@ -29,9 +33,9 @@ export const FormCompensationPage = () => {
         setSelectedOperator(value);
     }
 
-    const handleExcel = async (ano: number, mes: string, mercado: number) => {
+    const handleExcel = async (anio: number, mes: string, mercado: number) => {
 
-        if (ano === 0 || mes === '' || mercado === 0) {
+        if (anio === 0 || mes === '' || mercado === 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -42,40 +46,7 @@ export const FormCompensationPage = () => {
 
         try {
 
-            const { data } = await cgmApi.get(`sui/compensacion/consulta?anio=${ano}&mercado=${mercado}&mes=${mes}`);
-
-            if (data.length === 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'No hay datos para descargar!',
-                })
-                return;
-            }
-
-            const cleanData = data.map((item: Compensacion) => ({
-                ...item,
-                cargoDt: Number(item.cargoDt),
-                diug: Number(item.diug),
-                diu: Number(item.diu),
-                thc: Number(item.thc),
-                hc: Number(item.hc),
-                vcd: Number(item.vcd),
-                fiug: Number(item.fiug),
-                fium: Number(item.fium),
-                cec: Number(item.cec),
-                consumo: Number(item.consumo),
-                total: Number(item.total)
-            }));
-
-            const libro = XLSX.utils.book_new();
-
-            const hoja = XLSX.utils.json_to_sheet(cleanData);
-            XLSX.utils.book_append_sheet(libro, hoja, "Compensaciones");
-
-            setTimeout(() => {
-                XLSX.writeFile(libro, `Compensaciones-${mercado}-${new Date().getTime()}.xlsx`);
-            }, 1000);
+            await exportarCompensacion(anio, mes, mercado);
 
             Swal.fire({
                 title: '¡Excelente!',
@@ -85,32 +56,20 @@ export const FormCompensationPage = () => {
             });
 
         } catch (error) {
-            console.log(error);
-            (isAxiosError(error) && error.response)
-                ? Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: error.response.data.message,
-                })
-                : Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Error al descargar el archivo',
-                });
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: `Error al descargar el archivo ${error}`,
+            });
 
         }
     }
 
 
-    const handleCalculateCompensation = async (ano: number, mes: string, idMercado: number) => {
-
+    const handleCalculateCompensation = async (anio: number, mes: string, idMercado: number) => {
 
         try {
-
-            setLoading(true);
-            await cgmApi.post(`/sui/compensacion/calculo`, { anio: ano, mes: mes, mercado: idMercado });
-            setLoading(false);
-            setStatus(!status);
+            await calcularCompensacion(anio, mes, idMercado);
 
             Swal.fire({
                 icon: 'success',
@@ -118,38 +77,15 @@ export const FormCompensationPage = () => {
                 text: `Compensaciones calculadas!`,
             });
 
-
         } catch (error) {
-            setLoading(false);
-            (isAxiosError(error) && error.response) ?
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: error.response.data.message,
-                })
-                : Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Error al calcular las compensaciones',
-                })
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: `${error}`,
+            })
         }
 
-
-    }
-
-    const getStatus = (status: boolean) => {
-
-        setStatus(status);
-
-        setTimeout(() => {
-            setStatus(false);
-        }, 1000)
-    }
-
-    // Obtiene el flag para conocer si las variable requeridas para compensar estan completas
-    const getValidProcess = (valid: boolean) => {
-        // (valid) ? console.log('inactivo') : console.log('activo');
-        setValidProcess(valid);
     }
 
     return (
@@ -165,7 +101,7 @@ export const FormCompensationPage = () => {
                                             <h6 className="mb-0">Calcular Compensacion</h6>
                                         </div>
 
-                                        <SuiMenuOptions tipoFormato='compensacion' ano={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} setStatus={getStatus} />
+                                        <SuiMenuOptions tipoFormato='compensacion' anio={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} />
 
                                     </div>
                                 </div>
@@ -186,14 +122,14 @@ export const FormCompensationPage = () => {
                                     </div>
 
                                 </div>
-                                <SuiControlCompensation ano={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} setValidProcess={getValidProcess} />
+                                <SuiControlCompensation anio={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} />
                             </div>
                         </div>
                     </div>
 
                     <div className="row justify-content-center">
                         <div className="col-md-3 d-flex justify-content-center">
-                            <button disabled={validProcess} type="button" onClick={() => handleCalculateCompensation(Number(selectedYear), selectedMonth, Number(selectedOperator))} className="btn btn-primary px-5 radius-30">Calcular</button>
+                            <button disabled={validaCompensacion} type="button" onClick={() => handleCalculateCompensation(Number(selectedYear), selectedMonth, Number(selectedOperator))} className="btn btn-primary px-5 radius-30">Calcular</button>
                             <button type="button" className="btn btn-outline-primary excelButton" onClick={() => handleExcel(Number(selectedYear), selectedMonth, Number(selectedOperator))}>
                                 <i className="lni lni-cloud-download me-0"></i>
                             </button>
@@ -206,7 +142,7 @@ export const FormCompensationPage = () => {
 
                     <div className="row mt-5">
 
-                        <SuiControlFormat tipoFormato='compensacion' ano={Number(selectedYear)} mercado={Number(selectedOperator)} status={status} />
+                        <SuiControlFormat tipoFormato='compensacion' anio={Number(selectedYear)} mercado={Number(selectedOperator)} />
 
                     </div>
 

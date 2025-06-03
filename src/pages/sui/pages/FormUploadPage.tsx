@@ -1,3 +1,4 @@
+import { useSuiStore } from "@root/stores/sui/sui.store";
 import { SuiYearSelect, SuiUploadFormat, SuiOperatorSelect, SuiTypeFormat, SuiMonthSelect, SuiAlertMessage, SuiMenuOptions, SuiControlFormat } from "@sui/components/custom"
 import { useState } from "react";
 
@@ -5,13 +6,13 @@ import { useState } from "react";
 
 export const FormUploadPage = () => {
 
+    const loading = useSuiStore(state => state.loading);
 
     const [selectedTypeFormat, setSelectedTypeFormat] = useState<string>('');
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [selectedMonth, setSelectedMonth] = useState<string>('');
     const [selectedOperator, setSelectedOperator] = useState<string>('');
-    const [status, setStatus] = useState(false);
-    const [loading, setLoading] = useState(false);
+
 
 
     const handleSelectTypeFormat = (value: string) => {
@@ -30,18 +31,6 @@ export const FormUploadPage = () => {
         setSelectedOperator(value);
     }
 
-    const getStatus = (status: boolean) => {
-        setStatus(status);
-
-        setTimeout(() => {
-            setStatus(false);
-        }, 1000)
-    }
-
-    const getLoading = (loading: boolean) => {
-        setLoading(loading);
-    }
-
 
     return (
         <>
@@ -56,7 +45,7 @@ export const FormUploadPage = () => {
                                             <h6 className="mb-0">Cargar Formatos SUI</h6>
                                         </div>
 
-                                        <SuiMenuOptions tipoFormato={selectedTypeFormat} ano={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} setStatus={getStatus} />
+                                        <SuiMenuOptions tipoFormato={selectedTypeFormat} anio={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} />
 
                                     </div>
                                 </div>
@@ -83,7 +72,7 @@ export const FormUploadPage = () => {
                         </div>
                     </div>
 
-                    <SuiUploadFormat tipoFormato={selectedTypeFormat} ano={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} setStatus={getStatus} setLoading={getLoading} />
+                    <SuiUploadFormat tipoFormato={selectedTypeFormat} ano={Number(selectedYear)} mes={selectedMonth} mercado={Number(selectedOperator)} />
 
                     {
                         (loading) ? <SuiAlertMessage /> : null
@@ -91,7 +80,7 @@ export const FormUploadPage = () => {
 
                     <div className="row mt-5">
                         {(selectedTypeFormat !== 'reinicio') &&
-                            <SuiControlFormat tipoFormato={selectedTypeFormat} ano={Number(selectedYear)} mercado={Number(selectedOperator)} status={status} />
+                            <SuiControlFormat tipoFormato={selectedTypeFormat} anio={Number(selectedYear)} mercado={Number(selectedOperator)} />
                         }
                     </div>
 

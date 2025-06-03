@@ -29,6 +29,7 @@
       "@pages/*": ["src/pages/*"],
       "@layouts/*": ["src/layouts/*"],
       "@sui/*": ["src/pages/sui/*"],
+      "@enerbit/*": ["src/pages/enerbit/*"],
       "@routes/*": ["src/routes/*"],
       "@api/*": ["src/api/*"],
     }

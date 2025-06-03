@@ -41,6 +41,29 @@ export const Aside = () => {
                     </li>
 
                   </ul>
+
+                </li>
+
+
+                <li className="nav-item dropdown">
+                  <a
+                    className="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                    href="#"
+                    data-bs-toggle="dropdown"
+                  >
+                    <div className="parent-icon">
+                      <i className="lni lni-blackboard"></i>
+                    </div>
+                    <div className="menu-title d-flex align-items-center">Gestion Embebidos</div>
+                    <div className="ms-auto dropy-icon">
+                      <i className="bx bx-chevron-down"></i>
+                    </div>
+                  </a>
+                  <ul className="dropdown-menu">
+                    <NavLink className="dropdown-item" to="enerbit/borders">
+                      Fronteras Enerbit
+                    </NavLink>
+                  </ul>
                 </li>
 
               </ul>

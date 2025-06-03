@@ -1,31 +1,28 @@
-import { cgmApi } from "@api/cmgApi";
-import React, { useEffect, useState } from "react";
+import { useSuiStore } from "@root/stores/sui/sui.store";
+import React, { useEffect } from "react";
 
-interface ano {
-    id: number;
-    descripcion: string;
-}
+
 
 interface SuiYearProps {
-   onSelectChange: (value: string) => void;
+  onSelectChange: (value: string) => void;
 }
 
-export const SuiYearSelect: React.FC<SuiYearProps> = ({onSelectChange}) => {
+export const SuiYearSelect: React.FC<SuiYearProps> = ({ onSelectChange }) => {
 
-    const [anos, setAnos] = useState<ano[]>([]);
+  const anios = useSuiStore(state => state.anios);
+  const listarAnios = useSuiStore(state => state.listarAnios);
 
-    const getData = async() => {
-        const { data } = await cgmApi.get('/sui/anos');
-        setAnos(data);
-    }
+  const getData = async () => {
+    listarAnios();
+  }
 
-    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      onSelectChange(e.target.value);
-    }
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onSelectChange(e.target.value);
+  }
 
-    useEffect(() => {
-        getData();
-    },[] );  
+  useEffect(() => {
+    getData();
+  }, []);
 
 
   return (
@@ -34,11 +31,11 @@ export const SuiYearSelect: React.FC<SuiYearProps> = ({onSelectChange}) => {
       <select id="inputStatus" className="form-select" onChange={handleSelectChange}>
         <option value={Number(0)} >Seleccione</option>
         {
-            anos.map( option => (
-                <option key={option.id} value={option.id}>{option.descripcion}</option>
-            ))
+          anios.map(option => (
+            <option key={option.id} value={option.id}>{option.descripcion}</option>
+          ))
         }
-       </select>
+      </select>
     </>
   )
 }
